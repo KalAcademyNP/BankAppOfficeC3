@@ -18,27 +18,25 @@ namespace BankApp
     /// </summary>
     class Account
     {
-        private static int lastAccountNumber = 0;
 
         #region Properties
         /// <summary>
         /// Account number of the account
         /// </summary>
-        public int AccountNumber { get; private set; }
+        public int AccountNumber { get;  set; }
         /// <summary>
         /// Money in the account
         /// </summary>
-        public decimal Balance { get; private set; }
+        public decimal Balance { get;  set; }
         public string EmailAddress { get; set; }
 
         public AccountTypes AccountType { get; set; }
-        public DateTime CreatedDate { get; private set; }
+        public DateTime CreatedDate { get;  set; }
         public string AccountName { get; set; }
         #endregion
 
         public Account()
         {
-            AccountNumber = ++lastAccountNumber;
             CreatedDate = DateTime.Now;
         }
 
@@ -55,6 +53,10 @@ namespace BankApp
 
         public decimal Withdraw(decimal amount)
         {
+            if (amount > Balance)
+            {
+                throw new NSFException();
+            }
             Balance -= amount;
             return Balance;
         }

@@ -8,8 +8,7 @@ namespace BankApp
 {
     static class Bank
     {
-        private static readonly List<Account> accounts = new List<Account>();
-        private static readonly List<Transaction> transactions = new List<Transaction>();
+        private static BankContext db = new BankContext();
 
         public static Account CreateAccount(string emailAddress, string accountName, 
             AccountTypes accountType = AccountTypes.Checking, decimal initialDeposit = 0)
@@ -24,13 +23,26 @@ namespace BankApp
             {
                 account.Deposit(initialDeposit);
             }
-            accounts.Add(account);
+            db.Accounts.Add(account);
+            db.SaveChanges();
             return account;
         }
 
+        /// <summary>
+        /// Get all the accounts associated with the email address
+        /// </summary>
+        /// <param name="emailAddress">Email address of the user</param>
+        /// <returns>List of accounts</returns>
+        /// <exception cref="ArgumentNullException" />
+        /// 
         public static IEnumerable<Account> GetAllAccountsByEmailAddress(string emailAddress)
         {
-            return accounts.Where(a => a.EmailAddress == emailAddress);
+            if (string.IsNullOrEmpty(emailAddress) || string.IsNullOrEmpty(emailAddress.Trim()))
+            {
+                throw new ArgumentNullException("EmailAddress", "Email Address is required!");
+            }
+
+            return db.Accounts.Where(a => a.EmailAddress == emailAddress);
         }
 
         public static void Deposit(int accountNumber, decimal amount)
@@ -47,7 +59,8 @@ namespace BankApp
                 TransactionType = TypeOfTransaction.Credit
             };
 
-            transactions.Add(transaction);
+            db.Transactions.Add(transaction);
+            db.SaveChanges();
         }
 
         public static void Withdraw(int accountNumber, decimal amount)
@@ -63,16 +76,17 @@ namespace BankApp
                 TransactionType = TypeOfTransaction.Debit
             };
 
-            transactions.Add(transaction);
+            db.Transactions.Add(transaction);
+            db.SaveChanges();
 
         }
 
         public static Account GetAccountByAccountNumber(int accountNumber)
         {
-            var account = accounts.SingleOrDefault(a => a.AccountNumber == accountNumber);
+            var account = db.Accounts.SingleOrDefault(a => a.AccountNumber == accountNumber);
             if (account == null)
             {
-                return null;
+                throw new ArgumentException("Invalid Account Number!");
             }
 
             return account;
@@ -81,7 +95,7 @@ namespace BankApp
 
         public static IEnumerable<Transaction> GetTransactionsByAccountNumber(int accountNumber)
         {
-            return transactions
+            return db.Transactions
                     .Where(t => t.AccountNumber == accountNumber)
                     .OrderByDescending(t => t.TransactionDate);
         }

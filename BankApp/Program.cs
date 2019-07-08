@@ -6,8 +6,6 @@ namespace BankApp
     {
         static void Main(string[] args)
         {
-
-
             Console.WriteLine("Welcome to my bank!");
             while (true)
             {
@@ -59,13 +57,37 @@ namespace BankApp
                         Console.WriteLine("Deposit successful!");
                         break;
                     case "3":
-                        PrintAllAccounts();
-                        Console.Write("Account number: ");
-                        accountNumber = Convert.ToInt32(Console.ReadLine());
-                        Console.Write("Amount to withdraw: ");
-                        amount = Convert.ToDecimal(Console.ReadLine());
-                        Bank.Withdraw(accountNumber, amount);
-                        Console.WriteLine("Withdrawal successful!");
+                        try
+                        {
+                            PrintAllAccounts();
+                            Console.Write("Account number: ");
+                            accountNumber = Convert.ToInt32(Console.ReadLine());
+                            Console.Write("Amount to withdraw: ");
+                            amount = Convert.ToDecimal(Console.ReadLine());
+                            Bank.Withdraw(accountNumber, amount);
+                            Console.WriteLine("Withdrawal successful!");
+                        }
+                        catch(FormatException)
+                        {
+                            Console.WriteLine("Error: Please provide valid data! Try again!");
+                        }
+                        catch (OverflowException)
+                        {
+                            Console.WriteLine("Error: Please provide valid data! Try again!");
+                        }
+                        catch(NSFException)
+                        {
+                            Console.WriteLine("Error: InSufficient funds! Try again!");
+                        }
+                        catch (ArgumentException ax)
+                        {
+                            Console.WriteLine($"Errror: {ax.Message}. Try again!");
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine($"Errror: {ex.Message}. Try again!");
+                        }
+
                         break;
                     case "4":
                         PrintAllAccounts();
