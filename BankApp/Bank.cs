@@ -28,6 +28,29 @@ namespace BankApp
             return account;
         }
 
+        public static void EditAccount(Account updatedAccount)
+        {
+            var oldAccount = GetAccountByAccountNumber(updatedAccount.AccountNumber);
+            oldAccount.EmailAddress = updatedAccount.EmailAddress;
+            oldAccount.AccountType = updatedAccount.AccountType;
+            oldAccount.AccountName = updatedAccount.AccountName;
+
+            db.SaveChanges();
+
+        }
+
+        public static void DeleteAccount(int accountNumber)
+        {
+            var account = GetAccountByAccountNumber(accountNumber);
+            if (account == null)
+            {
+                throw new ArgumentException("Account Number not found!");
+            }
+
+            db.Accounts.Remove(account);
+            db.SaveChanges();
+        }
+
         /// <summary>
         /// Get all the accounts associated with the email address
         /// </summary>
