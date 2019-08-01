@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BankApp;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 
 namespace BankUI.Controllers
 {
@@ -135,6 +136,59 @@ namespace BankUI.Controllers
         {
             Bank.DeleteAccount(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        [HttpGet]
+        public IActionResult Deposit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var account = Bank.GetAccountByAccountNumber(id.Value);
+            return View(account);
+        }
+
+        [HttpPost]
+        public IActionResult Deposit(IFormCollection data)
+        {
+            var accountNumber = Convert.ToInt32(data["AccountNumber"]);
+            var amount = Convert.ToDecimal(data["Amount"]);
+
+            Bank.Deposit(accountNumber, amount);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Withdraw(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var account = Bank.GetAccountByAccountNumber(id.Value);
+            return View(account);
+        }
+
+        [HttpPost]
+        public IActionResult Withdraw(IFormCollection data)
+        {
+            var accountNumber = Convert.ToInt32(data["AccountNumber"]);
+            var amount = Convert.ToDecimal(data["Amount"]);
+
+            Bank.Withdraw(accountNumber, amount);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Transactions(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            var transactions = Bank.GetTransactionsByAccountNumber(id.Value);
+            return View(transactions);
         }
 
         private bool AccountExists(int id)
